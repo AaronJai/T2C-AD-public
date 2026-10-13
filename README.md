@@ -57,7 +57,7 @@ disambiguation success rate (DSR), validity rates, and paired bootstrap CIs.
 | File | Graph | Items |
 |---|---|---|
 | `data/benchmark-v3.json` | `data/SyntheticPoliceKG-v3.cypher` (6 labels, 11 rel types) | 120 (80 ambiguous, 20 per type) |
-| `data/benchmark-pole-external.json` | [`neo4j-graph-examples/pole`](https://github.com/neo4j-graph-examples/pole) | 100 |
+| `data/benchmark-pole-external.json` | [`neo4j-graph-examples/pole`](https://github.com/neo4j-graph-examples/pole) | 100 (80 ambiguous, 20 per type) |
 | `data/benchmark-updated.json` | `data/SyntheticPoliceKG.cypher` (v2, frozen baseline) | 125 (50 ambiguous) |
 
 Each item has a question, an ambiguity type (or `null`), a default interpretation, and
