@@ -1,0 +1,42 @@
+# config/query_generator_train.yaml — shared Query Generator SFT hyperparameters ONLY.
+#
+# Per-model fields (base, target_modules, dtype, load_in_4bit) live in config/models.yaml;
+# `output_dir` is derived from the chosen --model_key -> checkpoints/{model_key}/qg_adapter.
+# This YAML is base-independent and is reused verbatim across bases. It is identical in shape
+# to config/schema_linker_train.yaml (2.1) and differs only in `data` paths (QG jsonl) — the
+# two tasks share the harness, masking, registry and --model_key mechanism (see 2.4 spec).
+
+peft:
+  method: "lora"
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  bias: "none"
+  task_type: "CAUSAL_LM"
+  # target_modules: comes from config/models.yaml (per architecture)
+
+training:
+  # output_dir: derived -> checkpoints/{model_key}/qg_adapter
+  num_train_epochs: 3
+  per_device_train_batch_size: 2
+  per_device_eval_batch_size: 1         # default is 8; eval has no gradient checkpointing so
+                                         # 8×3584 tokens OOMs a 16 GB V100 — see decisions-log
+  gradient_accumulation_steps: 16        # effective batch = 32 (halved/doubled vs. 4/8 — see
+                                         # decisions-log 2026-06-08 OOM entry: max_seq_length
+                                         # 3584 + batch_size 4 OOM'd a 16 GB V100 at step 0)
+  learning_rate: 2.0e-4
+  lr_scheduler_type: "cosine"
+  warmup_ratio: 0.03
+  max_seq_length: 3584                   # measured on Kaya: QG p99=3486 (n=32339); matches the
+                                         # SL value so both adapters share one cap; see decisions-log
+  weight_decay: 0.001
+  bf16: false                            # Kaya branch: V100 (Volta) has no bf16 — train in fp16
+  fp16: true
+  logging_steps: 50
+  save_strategy: "epoch"
+  evaluation_strategy: "epoch"
+
+data:
+  train_path: "data/ozsoy_qg_train.jsonl"
+  eval_path:  "data/ozsoy_qg_eval.jsonl"
+  format: "prompt_completion"

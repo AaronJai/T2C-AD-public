@@ -1,0 +1,45 @@
+[project]
+name = "t2c-ad"
+version = "0.1.0"
+description = "Multi-agent Text-to-Cypher pipeline with explicit ambiguity detection and disambiguation."
+requires-python = ">=3.11"
+dependencies = [
+    # 0.2 — LLM interface & backends
+    "torch",
+    # Pinned (spec 0.2, amended 2026-06-10), two reasons:
+    #   <4.46 — run_sft passes TrainingArguments(evaluation_strategy=...), renamed in 4.46+.
+    #   <4.56 — diverse beam search (num_beam_groups) was removed from core in 4.56.0
+    #           (Hub fallback: custom_generate="transformers-community/group-beam-search").
+    # Matches kaya/setup_env.sh. Load-bearing for 2.2/2.3/3.1 diverse-beam inference.
+    "transformers>=4.40,<4.46",
+    "openai",
+    "anthropic",
+    "peft",            # lazily imported by HuggingFaceLLM only when a LoRA adapter is given
+    # 1.2 — Schema Linker training data
+    "datasets",        # loads neo4j/text2cypher-2025v1 (auto-download + cache)
+    "neo4j",           # CyVer SyntaxValidator driver (lazy; only when a live DB is configured)
+    "CyVer",           # SyntaxValidator pass on extracted patterns (lazy; needs live Neo4j)
+    # 2.1 — LoRA SFT harness + config
+    "pyyaml",          # reads config/models.yaml + config/schema_linker_train.yaml
+    "accelerate",      # transformers.Trainer backend (lazy; SFT GPU run)
+    "bitsandbytes",    # 4-bit QLoRA quantisation (lazy; SFT GPU run)
+    # 3.2 — Entity Lookup
+    "rapidfuzz",       # fuzzy match of mention spans against live KG node names
+    # 11.5 — paired bootstrap CIs (experiments/bootstrap_ci.py)
+    "numpy",           # vectorised resampling: B=10,000 x n index draws per stratum
+    # 4.1 — Semantic Evaluator
+    "sentence-transformers",  # cosine fallback for free-text result fields (optional; injected by callers).
+                              # Module imports torch only; the caller (5.x) builds the SentenceTransformer.
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["pipeline*"]
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: requires live Neo4j, a GPU, or a trained adapter (skipped by default)",
+]

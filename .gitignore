@@ -1,0 +1,44 @@
+# Virtual environments
+.venv/
+venv/
+env/
+environment.yml
+
+# Python bytecode / caches / build
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Training outputs / adapters
+checkpoints/
+
+# Generated training data
+*.jsonl
+
+# Model / HuggingFace caches
+.cache/
+huggingface/
+hf_cache/
+transformers_cache/
+*.safetensors
+*.bin
+*.pt
+*.ckpt
+
+# Run logs (SLURM .out/.err)
+logs/
+
+# Local secrets
+.env
+
+# OS / editor / agent
+.DS_Store
+.vscode/
+.idea/
+.claude/
