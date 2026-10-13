@@ -149,7 +149,7 @@ deviation from a spec and why. `CLAUDE.md` is the agent's entry point.
 ## Acknowledgements
 
 Supervised by Assoc. Prof. Tim French and Assoc. Prof. Wei Liu (UWA). Query validation
-uses [CyVer](https://github.com/gmandilara/CyVer). Schema linker and query generator
+uses [CyVer](https://gitlab.com/netmode/CyVer). Schema linker and query generator
 training uses the [Neo4j Text2Cypher 2025v1](https://huggingface.co/datasets/neo4j/text2cypher-2025v1)
 dataset.
 
